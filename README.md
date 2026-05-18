@@ -38,4 +38,4 @@ pnpm dev:api
 
 | 周次 | 标题 | 链接 |
 |------|------|------|
-| 第1周 | Express 起步 | [notes/01-express-hello.md](./notes/01-express-hello.md) |
+| 第1周 | Express 起步（已完成 ✓） | [notes/01-express-hello.md](./notes/01-express-hello.md) |
