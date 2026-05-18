@@ -1,0 +1,16 @@
+{
+  "name": "geek-gis-study",
+  "version": "1.0.0",
+  "private": true,
+  "description": "前端全栈 + WebGIS 学习之旅 monorepo",
+  "scripts": {
+    "dev:api": "pnpm --filter @geek-gis/api-express dev",
+    "dev:web": "pnpm --filter @geek-gis/web-gis dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

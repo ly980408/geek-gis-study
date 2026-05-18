@@ -1,0 +1,13 @@
+{
+  "name": "@geek-gis/web-gis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phase 2: WebGIS frontend application",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
