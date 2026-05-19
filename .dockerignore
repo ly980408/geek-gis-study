@@ -1,0 +1,6 @@
+node_modules
+.git
+notes
+scripts
+packages/web-gis
+packages/shared

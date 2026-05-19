@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    platform: linux/amd64
+    container_name: geek-gis-db
+    environment:
+      POSTGRES_USER: liyang
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: geek_gis
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./packages/api-express/src/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liyang -d geek_gis"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: geek-gis-api
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: geek_gis
+      DB_USER: liyang
+      DB_PASSWORD: 123456
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

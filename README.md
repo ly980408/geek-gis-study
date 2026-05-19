@@ -6,24 +6,43 @@
 
 ```
 geek-gis-study/
+├── Dockerfile              # API 服务容器构建
+├── docker-compose.yml      # 服务编排（db + api）
+├── .dockerignore
 ├── packages/
-│   ├── api-express/    # Phase 1：Node.js + Express 后端练习
-│   ├── web-gis/        # Phase 2：WebGIS 前端应用
-│   └── shared/         # 公共工具库
-├── notes/              # 学习笔记（Markdown）
-├── scripts/            # 辅助脚本
-├── pnpm-workspace.yaml # monorepo 配置
-└── package.json        # 根配置
+│   ├── api-express/        # Phase 1：Node.js + Express 后端
+│   ├── web-gis/            # Phase 2：WebGIS 前端应用
+│   └── shared/             # 公共工具库
+├── notes/                  # 学习笔记（Markdown）
+└── scripts/                # 辅助脚本
 ```
 
 ## 🚀 快速开始
 
-```bash
-pnpm install
+### 开发模式（本地 API + Docker 数据库）
 
-# 启动 API 服务
+```bash
+# 启动数据库
+docker compose up db -d
+
+# 启动 API 服务（热重载）
 pnpm dev:api
 ```
+
+### 全容器模式
+
+```bash
+docker compose up -d
+```
+
+访问 `http://localhost:3000/api/devices`
+
+## 📦 技术栈
+
+- **后端**：Node.js + Express
+- **数据库**：PostgreSQL 16 + PostGIS 3.4
+- **容器化**：Docker Compose
+- **空间查询**：ST_DWithin / ST_Distance（PostGIS）
 
 ## 📅 学习进度
 
@@ -38,4 +57,4 @@ pnpm dev:api
 
 | 周次 | 标题 | 链接 |
 |------|------|------|
-| 第1周 | Express 起步（已完成 ✓） | [notes/01-express-hello.md](./notes/01-express-hello.md) |
+| 第1周 | Express + 数据库 + Docker（已完成 ✓） | [notes/01-express-hello.md](./notes/01-express-hello.md) |
