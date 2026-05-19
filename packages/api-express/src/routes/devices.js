@@ -1,71 +1,73 @@
 const express = require('express');
 const router = express.Router();
-
-// ========== 模拟设备数据 ==========
-let devices = [
-  {
-    id: 1,
-    name: '温度传感器-A01',
-    type: 'temperature',
-    lat: 36.6512,
-    lng: 117.1201,
-    status: 'online',
-  },
-  {
-    id: 2,
-    name: '湿度传感器-B03',
-    type: 'humidity',
-    lat: 36.6612,
-    lng: 117.1301,
-    status: 'online',
-  },
-  {
-    id: 3,
-    name: 'PM2.5监测-C07',
-    type: 'air',
-    lat: 36.6412,
-    lng: 117.1101,
-    status: 'offline',
-  },
-];
-let nextId = 4;
+const pool = require('../db');
 
 // 获取所有设备
-router.get('/', (req, res) => {
-  res.json({ data: devices, total: devices.length });
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, type, lat, lng, status, created_at FROM devices ORDER BY id'
+    );
+    res.json({ data: result.rows, total: result.rowCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器内部错误' });
+  }
 });
 
 // 获取单个设备
-router.get('/:id', (req, res) => {
-  const device = devices.find((d) => d.id === Number(req.params.id));
-  if (!device) return res.status(404).json({ error: '设备未找到' });
-  res.json({ data: device });
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, type, lat, lng, status, created_at FROM devices WHERE id = $1',
+      [req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: '设备未找到' });
+    }
+    res.json({ data: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器内部错误' });
+  }
 });
 
 // 新增设备
-router.post('/', (req, res) => {
-  const { name, type, lat, lng } = req.body;
-  if (!name || !type) {
-    return res.status(400).json({ error: 'name 和 type 是必填字段' });
+router.post('/', async (req, res) => {
+  try {
+    const { name, type, lat, lng } = req.body;
+    if (!name || !type) {
+      return res.status(400).json({ error: 'name 和 type 是必填字段' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO devices (name, type, lat, lng, geom)
+       VALUES ($1, $2, $3, $4, ST_SetSRID(ST_MakePoint($4, $3), 4326))
+       RETURNING id, name, type, lat, lng, status, created_at`,
+      [name, type, lat || 0, lng || 0]
+    );
+    res.status(201).json({ data: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器内部错误' });
   }
-  const newDevice = {
-    id: nextId++,
-    name,
-    type,
-    lat: lat || 0,
-    lng: lng || 0,
-    status: 'offline',
-  };
-  devices.push(newDevice);
-  res.status(201).json({ data: newDevice });
 });
 
 // 删除设备
-router.delete('/:id', (req, res) => {
-  const index = devices.findIndex((d) => d.id === Number(req.params.id));
-  if (index === -1) return res.status(404).json({ error: '设备未找到' });
-  devices.splice(index, 1);
-  res.json({ message: '删除成功' });
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM devices WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: '设备未找到' });
+    }
+    res.json({ message: '删除成功' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器内部错误' });
+  }
 });
 
 module.exports = router;
