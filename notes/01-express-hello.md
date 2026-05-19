@@ -1,4 +1,4 @@
-# 第1周：Express 起步 + 数据库接入
+# 第1周：Express 起步 + 数据库接入（Phase 1 已完成）
 
 ## 学习日期
 2026-05-18 ~ 2026-05-19
@@ -6,16 +6,17 @@
 ## 已掌握的知识点
 
 ### Express 基础
-- `app.get()`、`app.post()`、`app.delete()` 路由定义
+- `app.get()`、`app.post()`、`app.put()`、`app.delete()` 路由定义
 - `app.use(express.json())` — JSON 请求体解析中间件
 - `app.listen()` 启动服务
 - **路由拆分**：`express.Router()` 提取独立路由模块
 
 ### RESTful 接口设计
-- `GET /api/devices` — 获取资源列表
+- `GET /api/devices` — 获取资源列表（支持 `?type=xxx` 过滤）
 - `GET /api/devices/nearby/query` — PostGIS 空间距离查询
 - `GET /api/devices/:id` — 获取单个资源（URL 参数）
 - `POST /api/devices` — 创建资源（请求体传参）
+- `PUT /api/devices/:id` — 更新资源（部分字段更新，`COALESCE` 保留原值）
 - `DELETE /api/devices/:id` — 删除资源
 - **注意**：`/nearby/query` 必须放在 `/:id` 前面，否则会被当成 id 匹配
 
@@ -24,7 +25,7 @@
 |---------|---------|------|
 | Query 参数 | `req.query.name` | `?lat=36.65&lng=117.12&radius=5` |
 | 路径参数 | `req.params.id` | `/api/devices/1` |
-| 请求体 | `req.body` | POST 请求 JSON |
+| 请求体 | `req.body` | POST/PUT 请求 JSON |
 
 ### PostgreSQL + PostGIS
 - **安装方式**：Docker（OrbStack）`postgis/postgis:16-3.4`
@@ -38,6 +39,7 @@
   - `ST_DWithin(geom1, geom2, distance)` — 距离范围内查询（单位：米）
   - `ST_Distance(geom1, geom2)` — 计算两点距离（单位：米）
 - **空间索引**：`CREATE INDEX ... ON devices USING GIST (geom)`
+- **部分更新技巧**：`COALESCE($1, column_name)` 实现只更新传了值的字段，`geom` 用 `CASE WHEN` 配合 COALESCE 按需重建
 
 ### Docker 容器化
 - **Dockerfile**：多阶段构建，Alpine 镜像，暴露 3000 端口
@@ -52,14 +54,17 @@ geek-gis-study/
 ├── docker-compose.yml            ← 容器编排
 ├── .dockerignore                 ← 构建排除配置
 ├── packages/
-│   └── api-express/src/
-│       ├── index.js              ← 入口：中间件 + 路由注册
-│       ├── db.js                 ← 数据库连接池（支持环境变量）
-│       ├── init.sql              ← 数据库自动初始化
-│       └── routes/
-│           └── devices.js        ← 设备 CRUD + 空间查询
+│   ├── api-express/src/
+│   │   ├── index.js              ← 入口：中间件 + 路由注册
+│   │   ├── db.js                 ← 数据库连接池（支持环境变量）
+│   │   ├── init.sql              ← 数据库自动初始化
+│   │   └── routes/
+│   │       └── devices.js        ← 完整 CRUD + 空间查询
+│   ├── web-gis/                  ← （Phase 2 待开发）
+│   └── shared/                   ← （Phase 2 待完善）
 ├── notes/
-│   └── 01-express-hello.md       ← 本周笔记
+│   ├── 01-express-hello.md       ← 第1周笔记
+│   └── ...
 └── README.md
 ```
 
@@ -89,6 +94,24 @@ docker exec -it geek-gis-db psql -U ${DB_USER} -d geek_gis
 docker compose down -v                 # 停止并删除数据卷
 ```
 
-## 下一步
-- 给设备加 PUT 更新接口（补全 CRUD）
-- Phase 2：WebGIS 前端 — Leaflet 地图展示设备位置
+## API 接口一览
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/hello?name=xxx` | 健康检查 |
+| GET | `/api/devices` | 获取设备列表（可选 `?type=temperature`） |
+| GET | `/api/devices/:id` | 获取单个设备 |
+| GET | `/api/devices/nearby/query?lat=&lng=&radius=` | 空间范围查询 |
+| POST | `/api/devices` | 创建设备（body: name, type, lat?, lng?, status?） |
+| PUT | `/api/devices/:id` | 更新设备（部分字段） |
+| DELETE | `/api/devices/:id` | 删除设备 |
+
+## ✅ Phase 1 已完成
+- [x] Express 路由 + RESTful CRUD
+- [x] PostgreSQL + PostGIS 空间查询
+- [x] Docker 容器化部署
+- [x] 输入参数校验
+- [x] 类型过滤查询
+
+## 下一步（Phase 2）
+- WebGIS 前端 — Vite + Leaflet 地图展示设备位置
