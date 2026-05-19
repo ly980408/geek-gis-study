@@ -83,7 +83,7 @@ pnpm dev:api                           # 启动 API 服务
 docker compose up -d                   # 启动全部服务
 
 # ---- 数据库操作 ----
-docker exec -it geek-gis-db psql -U liyang -d geek_gis
+docker exec -it geek-gis-db psql -U ${DB_USER} -d geek_gis
 
 # ---- 清理 ----
 docker compose down -v                 # 停止并删除数据卷
