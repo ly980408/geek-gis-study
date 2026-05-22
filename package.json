@@ -2,15 +2,25 @@
   "name": "geek-gis-study",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "前端全栈 + WebGIS 学习之旅 monorepo",
   "scripts": {
     "dev:api": "pnpm --filter @geek-gis/api-express dev",
     "dev:web": "pnpm --filter @geek-gis/web-gis dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
+    "lint": "eslint . && prettier --check .",
+    "format": "eslint --fix . ; prettier --write .",
     "clean": "pnpm -r clean"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.0.0"
   }
 }

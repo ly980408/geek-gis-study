@@ -19,19 +19,19 @@ export async function getNearbyDevices(lat, lng, radius) {
 export function createDevice(body) {
   return request('/devices', {
     method: 'POST',
-    body
+    body,
   })
 }
 
 export function updateDevice(id, body) {
   return request(`/devices/${id}`, {
     method: 'PUT',
-    body
+    body,
   })
 }
 
 export function deleteDevice(id) {
   return request(`/devices/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   })
 }

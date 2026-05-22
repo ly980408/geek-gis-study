@@ -1,2 +1,2 @@
 // shared utilities placeholder
-module.exports = {};
+module.exports = {}

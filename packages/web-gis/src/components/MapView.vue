@@ -15,13 +15,13 @@ const { devices, loading, error } = useDevices()
 const typeColors = {
   temperature: '#f97316',
   humidity: '#3b82f6',
-  air: '#22c55e'
+  air: '#22c55e',
 }
 
 const typeLabels = {
   temperature: '温度传感器',
   humidity: '湿度传感器',
-  air: '空气质量监测'
+  air: '空气质量监测',
 }
 
 const searchMode = ref(false)
@@ -39,7 +39,7 @@ function createMarker(device) {
     color: '#fff',
     weight: 2,
     opacity: 1,
-    fillOpacity: 0.8
+    fillOpacity: 0.8,
   })
   marker.bindPopup(`
     <div style="min-width: 180px;">
@@ -73,7 +73,7 @@ function placeSearchCircle(latlng) {
     color: '#6366f1',
     fillColor: '#6366f1',
     fillOpacity: 0.1,
-    weight: 2
+    weight: 2,
   }).addTo(map)
   updateSearchTooltip()
   searchHint.value = ''
@@ -146,8 +146,9 @@ onMounted(() => {
   map = L.map(mapContainer.value).setView([36.65, 117.05], 12)
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    maxZoom: 19
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 19,
   }).addTo(map)
 
   markersLayer = L.layerGroup().addTo(map)
@@ -170,11 +171,7 @@ watch(devices, (newDevices) => {
     <div v-if="error" class="status-bar error">加载失败：{{ error }}</div>
 
     <div class="search-toolbar">
-      <button
-        class="btn"
-        :class="{ active: searchMode }"
-        @click="toggleSearchMode"
-      >
+      <button class="btn" :class="{ active: searchMode }" @click="toggleSearchMode">
         {{ searchMode ? '退出搜索' : '范围搜索' }}
       </button>
     </div>
@@ -188,8 +185,8 @@ watch(devices, (newDevices) => {
           max="20"
           step="0.5"
           :value="searchRadius"
-          @input="updateRadius(Number($event.target.value))"
           class="slider"
+          @input="updateRadius(Number($event.target.value))"
         />
         <span class="value">{{ searchRadius }} km</span>
       </div>

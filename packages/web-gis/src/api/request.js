@@ -11,8 +11,8 @@ async function request(url, options = {}) {
     signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
-      ...headers
-    }
+      ...headers,
+    },
   }
 
   if (body && method !== 'GET') {
