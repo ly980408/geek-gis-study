@@ -19,15 +19,27 @@ geek-gis-study/
 
 ## 🚀 快速开始
 
-### 开发模式（本地 API + Docker 数据库）
+### 启动数据库
 
 ```bash
-# 启动数据库
 docker compose up db -d
+```
 
-# 启动 API 服务（热重载）
+### 启动后端 API（热重载）
+
+```bash
 pnpm dev:api
 ```
+
+访问 `http://localhost:3000/api/devices`
+
+### 启动前端开发服务器
+
+```bash
+pnpm dev:web
+```
+
+浏览器打开 `http://localhost:5173`
 
 ### 全容器模式
 
@@ -35,26 +47,20 @@ pnpm dev:api
 docker compose up -d
 ```
 
-访问 `http://localhost:3000/api/devices`
-
 ## 📦 技术栈
 
 - **后端**：Node.js + Express
 - **数据库**：PostgreSQL 16 + PostGIS 3.4
+- **前端**：Vue 3 + Vite + Leaflet
 - **容器化**：Docker Compose
-- **空间查询**：ST_DWithin / ST_Distance（PostGIS）
 
 ## 📅 学习进度
 
-| 阶段 | 时间 | 状态 |
-|------|------|------|
-| Phase 1: 后端筑基 | 第1个月 | ✅ 已完成 |
-| Phase 2: WebGIS 突破 | 第2~3个月 | ⏳ 待开始 |
-| Phase 3: 深度强化 | 第4~6个月 | ⏳ 待开始 |
-| Phase 4: 综合提升 | 第7~12个月 | ⏳ 待开始 |
+各阶段详情、学习笔记和问题记录见 `notes/` 目录下的笔记文件。
 
 ## 📖 笔记索引
 
 | 周次 | 标题 | 链接 |
 |------|------|------|
-| 第1周 | Express + PostGIS + 完整 CRUD + Docker（✅ 已完成） | [notes/01-express-hello.md](./notes/01-express-hello.md) |
+| 第1周 | Express + PostGIS + 完整 CRUD + Docker | [notes/01-express-hello.md](./notes/01-express-hello.md) |
+| 第2周 | Vue 3 + Leaflet 地图可视化（Phase 2 启动） | [notes/02-webgis-leaflet.md](./notes/02-webgis-leaflet.md) |
