@@ -33,14 +33,14 @@ router.get('/nearby/query', async (req, res) => {
     const result = await pool.query(
       `SELECT id, name, type, lat, lng, status,
               ST_Distance(
-                geom,
-                ST_SetSRID(ST_MakePoint($2, $1), 4326)
+                geom::geography,
+                ST_SetSRID(ST_MakePoint($2::numeric, $1::numeric), 4326)::geography
               ) / 1000 AS distance_km
        FROM devices
        WHERE ST_DWithin(
-         geom,
-         ST_SetSRID(ST_MakePoint($2, $1), 4326),
-         $3 * 1000
+         geom::geography,
+         ST_SetSRID(ST_MakePoint($2::numeric, $1::numeric), 4326)::geography,
+         $3::numeric * 1000
        )
        ORDER BY distance_km`,
       [lat, lng, radius],
