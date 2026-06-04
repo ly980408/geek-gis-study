@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const pool = require('../db')
+const { buildNearbyKey, getNearby, setNearby, clearNearbyCache } = require('../cache')
 
 // 获取所有设备（支持 ?type=xxx 过滤）
 router.get('/', async (req, res) => {
@@ -30,6 +31,13 @@ router.get('/nearby/query', async (req, res) => {
     if (!lat || !lng || !radius) {
       return res.status(400).json({ error: '需要提供 lat、lng、radius 参数' })
     }
+
+    const cacheKey = buildNearbyKey(lat, lng, radius)
+    const cached = await getNearby(cacheKey)
+    if (cached) {
+      return res.json({ data: cached, total: cached.length, cached: true })
+    }
+
     const result = await pool.query(
       `SELECT id, name, type, lat, lng, status,
               ST_Distance(
@@ -45,6 +53,7 @@ router.get('/nearby/query', async (req, res) => {
        ORDER BY distance_km`,
       [lat, lng, radius]
     )
+    await setNearby(cacheKey, result.rows)
     res.json({ data: result.rows, total: result.rowCount })
   } catch (err) {
     console.error(err)
@@ -89,6 +98,7 @@ router.post('/', async (req, res) => {
        RETURNING id, name, type, lat, lng, status, created_at`,
       [name, type, lat ?? null, lng ?? null, status ?? 'offline']
     )
+    await clearNearbyCache()
     res.status(201).json({ data: result.rows[0] })
   } catch (err) {
     console.error(err)
@@ -125,6 +135,7 @@ router.put('/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: '设备未找到' })
     }
+    await clearNearbyCache()
     res.json({ data: result.rows[0] })
   } catch (err) {
     console.error(err)
@@ -141,6 +152,7 @@ router.delete('/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: '设备未找到' })
     }
+    await clearNearbyCache()
     res.json({ message: '删除成功' })
   } catch (err) {
     console.error(err)
